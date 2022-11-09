@@ -1,0 +1,12 @@
+.itemsList{
+    display: flex;
+    flex-wrap: wrap;
+    &__item{
+        width: 25%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin: 50px 0px;
+    }
+}
