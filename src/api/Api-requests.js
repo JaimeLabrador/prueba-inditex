@@ -9,7 +9,7 @@ export const getItems = () => {
 }
 
 export const getItemById = (id) => {
-  axios.get(`${baseUrl}/product/:${id}`).then((response) => {
+  axios.get(`${baseUrl}/product/${id}`).then((response) => {
     return response
   })
 }
