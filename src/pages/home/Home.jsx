@@ -4,11 +4,13 @@ import { baseUrl } from '../../api/Api-requests'
 import './Home.scss'
 import { Link, generatePath } from 'react-router-dom'
 import { route } from '../../config/routes'
-import { setLocalStorage } from '../../functions/functions'
+import { setLocalStorage, simplifyString } from '../../functions/functions'
 import { LocalStorage } from 'ttl-localstorage'
+import SearchInput from '../../components/searchInput/SearchInput'
 
 const Home = () => {
   const [data, setData] = useState([])
+  const [inputString, setInputString] = useState('')
 
   useEffect(() => {
     const itemsList = LocalStorage.get('itemsList')
@@ -18,12 +20,27 @@ const Home = () => {
         setLocalStorage('itemsList', response.data)
       })
     } else {
-      setData(itemsList)
+      const filteredData = []
+      itemsList.map(item =>
+        item.model.replace(/[^a-zA-Z0-9 ]/g, '').replace(/\s+/g, '').toLowerCase().includes(inputString) ? filteredData.push(item) : null
+      )
+      if (inputString === '') {
+        setData(itemsList)
+      } else {
+        setData(filteredData)
+      }
     }
-  }, [])
+  }, [inputString])
+
+  const getInputString = (e) => {
+    simplifyString(setInputString, e.target.value)
+  }
 
   return (
     <div className='itemsList'>
+      <div>
+        <SearchInput handleAction ={ getInputString }/>
+      </div>
       {data.map(item =>
         <Link
           className='itemsList__item'
