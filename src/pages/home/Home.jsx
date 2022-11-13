@@ -21,8 +21,19 @@ const Home = () => {
       })
     } else {
       const filteredData = []
-      itemsList.map(item =>
-        item.model.replace(/[^a-zA-Z0-9 ]/g, '').replace(/\s+/g, '').toLowerCase().includes(inputString) ? filteredData.push(item) : null
+      itemsList.map((item) =>
+        item.model
+          .replace(/[^a-zA-Z0-9 ]/g, '')
+          .replace(/\s+/g, '')
+          .toLowerCase()
+          .includes(inputString) ||
+        item.brand
+          .replace(/[^a-zA-Z0-9 ]/g, '')
+          .replace(/\s+/g, '')
+          .toLowerCase()
+          .includes(inputString)
+          ? filteredData.push(item)
+          : null
       )
       if (inputString === '') {
         setData(itemsList)

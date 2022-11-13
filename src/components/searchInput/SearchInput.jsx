@@ -1,9 +1,9 @@
 import React from 'react'
 import { PropTypes } from 'prop-types'
 
-function SearchInput ({ handleAction }) {
+const SearchInput = ({ handleAction }) => {
   return (
-    <input type="text" onChange={ handleAction }/>
+    <input placeholder='Serach' type="text" onChange={ handleAction }/>
   )
 }
 SearchInput.propTypes = {

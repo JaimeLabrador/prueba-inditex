@@ -1,15 +1,20 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { baseUrl } from '../../api/Api-requests'
 import axios from 'axios'
 import { LocalStorage } from 'ttl-localstorage'
 import { setLocalStorage } from '../../functions/functions'
 import { Link } from 'react-router-dom'
 import { route } from '../../config/routes'
+import Button from '../../components/button/Button'
+import { cartContext } from '../../providers/CartProvider'
 
 const Item = () => {
   const [item, setItem] = useState({})
   const [colors, setColors] = useState([])
   const [memory, setMemory] = useState([])
+  const [selectedColor, setSelectedColor] = useState()
+  const [selectedMemory, setSelectedMemory] = useState()
+  const [cartNumber, setCartNumber] = useContext(cartContext)
 
   useEffect(() => {
     const id = LocalStorage.get('item')
@@ -20,16 +25,26 @@ const Item = () => {
         setItem(response.data)
         setLocalStorage('localItem', response.data)
         setLocalStorage('currentId', response.data.id)
-        setColors(response.data.colors)
-        setMemory(response.data.internalMemory)
-        console.log(response.data)
+        setColors(response.data.options.colors)
+        setMemory(response.data.options.storages)
       })
     } else {
       setItem(localItem)
-      setColors(localItem.colors)
-      setMemory(localItem.internalMemory)
+      setColors(localItem.options.colors)
+      setMemory(localItem.options.storages)
     }
   }, [])
+
+  const sendItemInfo = () => {
+    axios.post(`${baseUrl}/cart`, {
+      id: item.id,
+      colorCode: selectedColor,
+      storageCode: selectedMemory
+    }).then((response) => {
+      setCartNumber(response.data)
+      setLocalStorage('cartNumberLocal', cartNumber)
+    })
+  }
 
   return (
     <div>
@@ -54,10 +69,15 @@ const Item = () => {
                 <p>{item.weight === '' ? null : `Peso: ${item.weight}g`}</p>
             </div>
             <div>
-                <p>Storage:</p>
-                {colors.map(color => colors.length > 0 ? <button key={color}>{color}</button> : null)}
-                <p>Memory:</p>
-                {memory.map(element => memory.length > 0 ? <button key={element}>{element}</button> : null)}
+              <p>Storage:</p>
+              {colors.map(color =>
+                <Button key={color.code} onClick={() => { setSelectedColor(color.code) }} text={color.name}/>
+              )}
+              <p>Memory:</p>
+              {memory.map(element =>
+                <Button key={element.code} onClick={() => { setSelectedMemory(element.code) }} text={element.name}/>
+              )}
+              <Button onClick={() => { sendItemInfo() }} text={'Add to cart'}/>
             </div>
         </div>
         <div>
